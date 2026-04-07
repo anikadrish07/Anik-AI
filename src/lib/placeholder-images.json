@@ -1,3 +1,16 @@
 {
-  "placeholderImages": []
+  "placeholderImages": [
+    {
+      "id": "ai-avatar",
+      "description": "Minimalist AI bot profile picture",
+      "imageUrl": "https://picsum.photos/seed/mindflow/200/200",
+      "imageHint": "ai robot"
+    },
+    {
+      "id": "user-avatar",
+      "description": "Modern user profile silhouette",
+      "imageUrl": "https://picsum.photos/seed/user1/200/200",
+      "imageHint": "user profile"
+    }
+  ]
 }
