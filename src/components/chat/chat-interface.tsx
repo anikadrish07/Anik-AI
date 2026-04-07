@@ -1,3 +1,4 @@
+
 "use client"
 
 import * as React from "react"
@@ -67,12 +68,12 @@ export function ChatInterface() {
       } else {
         throw new Error("Empty response from AI")
       }
-    } catch (error) {
+    } catch (error: any) {
       console.error("AI Chat Error:", error)
       toast({
         variant: "destructive",
         title: "Connection Error",
-        description: "Failed to reach MindFlow servers. Please check your connection.",
+        description: error.message || "Failed to reach MindFlow servers. Please check your API key in .env.",
       })
     } finally {
       setIsLoading(false)
