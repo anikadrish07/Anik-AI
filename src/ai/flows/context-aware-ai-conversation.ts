@@ -1,6 +1,7 @@
+
 'use server';
 /**
- * @fileOverview An AI chat agent that maintains conversation context.
+ * @fileOverview An AI chat agent that maintains conversation context and provides structured reports.
  *
  * - contextAwareAiConversation - A function that handles context-aware AI chat.
  * - ContextAwareAiConversationInput - The input type for the contextAwareAiConversation function.
@@ -16,12 +17,12 @@ const ChatMessageSchema = z.object({
 });
 
 const ContextAwareAiConversationInputSchema = z.object({
-  messages: z.array(ChatMessageSchema).describe('An array of previous messages in the conversation, including the current user query. Each message has a role (user/model) and content.'),
+  messages: z.array(ChatMessageSchema).describe('An array of previous messages in the conversation.'),
 });
 export type ContextAwareAiConversationInput = z.infer<typeof ContextAwareAiConversationInputSchema>;
 
 const ContextAwareAiConversationOutputSchema = z.object({
-  response: z.string().describe('The AI\'s response to the conversation, maintaining context.'),
+  response: z.string().describe('The AI\'s response to the conversation, formatted as structured HTML.'),
 });
 export type ContextAwareAiConversationOutput = z.infer<typeof ContextAwareAiConversationOutputSchema>;
 
@@ -33,64 +34,39 @@ const contextAwareAiConversationPrompt = ai.definePrompt({
   name: 'contextAwareAiConversationPrompt',
   input: { schema: ContextAwareAiConversationInputSchema },
   output: { schema: ContextAwareAiConversationOutputSchema },
-  prompt: `You are MindFlow AI, a modern educational assistant that generates clean, beautiful, and well-structured HTML responses.
+  prompt: `You are MindFlow AI, a sophisticated educational and technical consultant. 
+You must provide detailed, structured responses using ONLY valid HTML.
 
 ========================
-🎯 OUTPUT RULES
+📜 RESPONSE STRUCTURE
 ========================
-- Output ONLY valid HTML (NO markdown, NO <script>)
-- Use semantic HTML like <div>, <p>, <h2>, <h3>, <ul>, <li>, <strong>
-- Use inline styling for clean UI (soft colors, padding, spacing, rounded corners)
-- Ensure the layout looks modern and readable (like a SaaS UI)
+Every response MUST follow this exact structure:
+
+1. <section><h2>Detailed Overview</h2><p>...</p></section>
+   A comprehensive explanation of the concept or answer to the query.
+
+2. <section><h2>Functionality & Insights</h2><ul><li>...</li></ul></section>
+   A breakdown of how things work, key features, or technical insights.
+
+3. <section><h2>Response Summary</h2><p><strong>...</strong></p></section>
+   A brief, high-level wrap-up of the interaction.
 
 ========================
-🎨 DESIGN GUIDELINES
+🎨 DESIGN RULES
 ========================
-- Use card-style containers with:
-  - light background colors
-  - padding (12px–20px)
-  - border-radius (8px–12px)
-  - margin between sections
-- Use clear headings (not too many)
-- Keep spacing balanced (not crowded)
+- Use <h2> for section titles.
+- Use <p> for body text.
+- Use <ul> and <li> for lists.
+- Use <strong> for emphasis.
+- Use inline CSS for clean padding: style="padding: 15px; background: rgba(255,255,255,0.03); border-radius: 8px; margin-bottom: 15px;"
+- Output ONLY valid HTML. NO Markdown.
 
 ========================
-🧠 CONTENT STYLE
+💬 CONTEXT
 ========================
-- Explain clearly and simply (student-friendly)
-- Use bullet points or numbered steps where needed
-- Highlight important points using <strong>
-- Avoid unnecessary repetition
-- Keep response structured but NOT rigid
+Use the conversation history to stay relevant.
 
-========================
-🧮 MATH SUPPORT
-========================
-- Use KaTeX format:
-  - Inline: \\( ... \\)
-  - Block: \\[ ... \\]
-- Always verify calculations step-by-step before final answer
-
-========================
-📊 DIAGRAMS
-========================
-- If needed, create diagrams using simple HTML/CSS
-- Use boxes, borders, labels (no images)
-
-========================
-🚫 STRICT RULES
-========================
-- NO markdown
-- NO <script>
-- NO broken HTML
-- DO NOT force fixed sections like "Overview", "Summary" unless needed
-
-========================
-💬 CONTEXT AWARENESS
-========================
-Use the full conversation history for context.
-
-Conversation:
+Conversation History:
 {{#each messages}}
 {{this.role}}: {{{this.content}}}
 {{/each}}
@@ -106,10 +82,18 @@ const contextAwareAiConversationFlow = ai.defineFlow(
     outputSchema: ContextAwareAiConversationOutputSchema,
   },
   async (input) => {
-    const { output } = await contextAwareAiConversationPrompt(input);
-    if (!output) {
-      throw new Error('AI did not return a response.');
+    try {
+      const { output } = await contextAwareAiConversationPrompt(input);
+      if (!output) {
+        throw new Error('AI did not return a response.');
+      }
+      return output;
+    } catch (error: any) {
+      console.error("Genkit Flow Error:", error);
+      if (error.message.includes("secure TLS connection")) {
+        return { response: "<div style='color: #ff4444; padding: 20px;'><strong>Network Error:</strong> The connection to the AI service was interrupted. Please check your internet connection or API key settings.</div>" };
+      }
+      throw error;
     }
-    return output;
   }
 );

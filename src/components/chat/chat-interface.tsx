@@ -191,11 +191,15 @@ export function ChatInterface() {
                   Your sophisticated AI assistant for deep thinking, creative writing, and complex problem-solving.
                 </p>
                 <div className="mt-8 grid grid-cols-1 gap-3 w-full">
-                  <Button variant="secondary" className="justify-start h-auto py-3 px-4 border border-border" onClick={() => setInputValue("Help me brainstorm some marketing ideas for a new app.")}>
-                    "Help me brainstorm marketing ideas..."
+                  <Button variant="secondary" className="justify-start h-auto py-3 px-4 border border-border" onClick={() => {
+                    setInputValue("Explain the concept of neural networks.");
+                  }}>
+                    "Explain neural networks..."
                   </Button>
-                  <Button variant="secondary" className="justify-start h-auto py-3 px-4 border border-border" onClick={() => setInputValue("Explain quantum physics to me like I'm five.")}>
-                    "Explain quantum physics like I'm five..."
+                  <Button variant="secondary" className="justify-start h-auto py-3 px-4 border border-border" onClick={() => {
+                    setInputValue("Brainstorm marketing strategies for a SaaS product.");
+                  }}>
+                    "Brainstorm SaaS marketing..."
                   </Button>
                 </div>
               </div>

@@ -1,16 +1,20 @@
 
 import postgres from 'postgres';
 
-const DATABASE_URL = process.env.DATABASE_URL!;
+const DATABASE_URL = process.env.DATABASE_URL;
 
-if (!DATABASE_URL) {
-  console.warn('DATABASE_URL is not defined. PostgreSQL functionality will be unavailable.');
-}
-
-const sql = postgres(DATABASE_URL, {
-  ssl: 'require',
-  max: 10,
-});
+/**
+ * Initialize Postgres client lazily and safely.
+ * rejectUnauthorized: false is often required for hosted databases like Neon/Supabase 
+ * when connecting from certain cloud environments.
+ */
+const sql = DATABASE_URL 
+  ? postgres(DATABASE_URL, {
+      ssl: { rejectUnauthorized: false },
+      max: 10,
+      connect_timeout: 10,
+    }) 
+  : null;
 
 export default sql;
 
