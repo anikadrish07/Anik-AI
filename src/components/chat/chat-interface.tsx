@@ -10,6 +10,7 @@ import { MessageBubble } from "./message-bubble"
 import { TypingIndicator } from "./typing-indicator"
 import { contextAwareAiConversation } from "@/ai/flows/context-aware-ai-conversation"
 import { cn } from "@/lib/utils"
+import { useRouter } from "next/navigation"
 import {
   Sidebar,
   SidebarContent,
@@ -36,6 +37,7 @@ export function ChatInterface() {
   const [isLoading, setIsLoading] = React.useState(false)
   const scrollRef = React.useRef<HTMLDivElement>(null)
   const { toast } = useToast()
+  const router = useRouter()
 
   const scrollToBottom = () => {
     if (scrollRef.current) {
@@ -73,7 +75,7 @@ export function ChatInterface() {
       toast({
         variant: "destructive",
         title: "Connection Error",
-        description: error.message || "Failed to reach MindFlow servers. Please check your API key in .env.",
+        description: error.message || "Failed to reach MindFlow servers.",
       })
     } finally {
       setIsLoading(false)
@@ -93,6 +95,20 @@ export function ChatInterface() {
       title: "Conversation Reset",
       description: "Starting a fresh session.",
     })
+  }
+
+  const handleLogout = async () => {
+    try {
+      await fetch("/api/auth/logout", { method: "POST" })
+      router.push("/login")
+      router.refresh()
+    } catch (error) {
+      toast({
+        variant: "destructive",
+        title: "Logout Error",
+        description: "Failed to sign out safely.",
+      })
+    }
   }
 
   return (
@@ -139,7 +155,10 @@ export function ChatInterface() {
                 </SidebarMenuButton>
               </SidebarMenuItem>
               <SidebarMenuItem>
-                <SidebarMenuButton className="gap-2 text-destructive hover:text-destructive">
+                <SidebarMenuButton 
+                  className="gap-2 text-destructive hover:text-destructive"
+                  onClick={handleLogout}
+                >
                   <LogOut className="h-4 w-4" />
                   <span>Sign Out</span>
                 </SidebarMenuButton>
