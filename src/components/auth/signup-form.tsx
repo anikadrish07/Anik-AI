@@ -1,3 +1,7 @@
+/**
+ * @fileOverview Frontend component for the registration form.
+ */
+
 "use client"
 
 import * as React from "react"
@@ -21,15 +25,12 @@ import { Input } from "@/components/ui/input"
 import { useToast } from "@/hooks/use-toast"
 
 const formSchema = z.object({
-  email: z.string().email({
-    message: "Please enter a valid email address.",
-  }),
-  password: z.string().min(6, {
-    message: "Password must be at least 6 characters.",
-  }),
+  name: z.string().min(2, "Name is too short"),
+  email: z.string().email("Invalid email address"),
+  password: z.string().min(6, "Password must be at least 6 characters"),
 })
 
-export function LoginForm() {
+export function SignupForm() {
   const router = useRouter()
   const { toast } = useToast()
   const [isLoading, setIsLoading] = React.useState(false)
@@ -37,6 +38,7 @@ export function LoginForm() {
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
+      name: "",
       email: "",
       password: "",
     },
@@ -44,33 +46,21 @@ export function LoginForm() {
 
   async function onSubmit(values: z.infer<typeof formSchema>) {
     setIsLoading(true)
-
     try {
-      const response = await fetch("/api/auth/login", {
+      const response = await fetch("/api/auth/signup", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(values),
       })
 
       const data = await response.json()
+      if (!response.ok) throw new Error(data.error || "Signup failed")
 
-      if (!response.ok) {
-        throw new Error(data.error || "Invalid credentials")
-      }
-
-      toast({
-        title: "Success",
-        description: "Welcome back!",
-      })
-      
+      toast({ title: "Account created!", description: "Welcome to MindFlow AI." })
       router.push("/")
       router.refresh()
     } catch (error: any) {
-      toast({
-        variant: "destructive",
-        title: "Authentication Failed",
-        description: error.message,
-      })
+      toast({ variant: "destructive", title: "Signup Failed", description: error.message })
     } finally {
       setIsLoading(false)
     }
@@ -81,13 +71,22 @@ export function LoginForm() {
       <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4 bg-card p-6 rounded-2xl border border-border shadow-lg">
         <FormField
           control={form.control}
+          name="name"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Full Name</FormLabel>
+              <FormControl><Input placeholder="John Doe" {...field} /></FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+        <FormField
+          control={form.control}
           name="email"
           render={({ field }) => (
             <FormItem>
               <FormLabel>Email</FormLabel>
-              <FormControl>
-                <Input placeholder="name@example.com" {...field} />
-              </FormControl>
+              <FormControl><Input placeholder="name@example.com" {...field} /></FormControl>
               <FormMessage />
             </FormItem>
           )}
@@ -98,19 +97,17 @@ export function LoginForm() {
           render={({ field }) => (
             <FormItem>
               <FormLabel>Password</FormLabel>
-              <FormControl>
-                <Input type="password" placeholder="••••••••" {...field} />
-              </FormControl>
+              <FormControl><Input type="password" placeholder="••••••••" {...field} /></FormControl>
               <FormMessage />
             </FormItem>
           )}
         />
         <Button className="w-full" type="submit" disabled={isLoading}>
           {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-          Sign In
+          Create Account
         </Button>
         <p className="text-center text-sm text-muted-foreground mt-4">
-          Don't have an account? <Link href="/signup" className="text-primary hover:underline">Sign Up</Link>
+          Already have an account? <Link href="/login" className="text-primary hover:underline">Sign In</Link>
         </p>
       </form>
     </Form>
