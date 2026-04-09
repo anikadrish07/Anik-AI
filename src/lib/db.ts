@@ -19,14 +19,3 @@ const sql = DATABASE_URL
 
 export default sql;
 
-/**
- * Expected SQL Schema:
- * 
- * CREATE TABLE IF NOT EXISTS users (
- *   id SERIAL PRIMARY KEY,
- *   email TEXT UNIQUE NOT NULL,
- *   password TEXT NOT NULL,
- *   name TEXT,
- *   created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
- * );
- */

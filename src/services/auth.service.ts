@@ -1,9 +1,3 @@
-
-/**
- * @fileOverview Service layer for authentication business logic.
- * Handles password hashing, user lookup, and session creation.
- */
-
 import bcrypt from "bcryptjs";
 import sql from "@/lib/db";
 import { User } from "@/models/user.model";
