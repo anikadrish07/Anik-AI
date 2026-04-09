@@ -36,6 +36,8 @@ export function ChatInterface() {
   const [inputValue, setInputValue] = React.useState("")
   const [isLoading, setIsLoading] = React.useState(false)
   const scrollRef = React.useRef<HTMLDivElement>(null)
+  const [chatId, setChatId] = React.useState<number | null>(null);
+  const [chatList, setChatList] = React.useState<any[]>([]);
   const { toast } = useToast()
   const router = useRouter()
 
@@ -55,21 +57,74 @@ export function ChatInterface() {
 
     const userMessage: ChatMessage = { role: "user", content: inputValue.trim() }
     const updatedMessages = [...messages, userMessage]
-    
+
     setMessages(updatedMessages)
     setInputValue("")
     setIsLoading(true)
 
     try {
+      let currentChatId = chatId;
+
+      // Create chat if not exists
+      if (!currentChatId) {
+        const res = await fetch("/api/chat/create", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            title: inputValue.slice(0, 30),
+          }),
+        });
+
+        const data = await res.json();
+        currentChatId = data.id;
+        setChatId(currentChatId);
+
+        await fetchChats();
+      }
+
+      //Save USER message
+      await fetch("/api/chat/message", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          chatId: currentChatId,
+          role: "user",
+          content: inputValue,
+        }),
+      });
+
+      // Call AI
       const response = await contextAwareAiConversation({
         messages: updatedMessages
-      })
-      
-      if (response && response.response) {
-        setMessages(prev => [...prev, { role: "model", content: response.response }])
+      });
+
+      if (response?.response) {
+        // Save AI message
+        await fetch("/api/chat/message", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            chatId: currentChatId,
+            role: "model",
+            content: response.response,
+          }),
+        });
+
+        setMessages(prev => [
+          ...prev,
+          { role: "model", content: response.response }
+        ]);
+
       } else {
-        throw new Error("Empty response from AI")
+        throw new Error("Empty response from AI");
       }
+
     } catch (error: any) {
       console.error("AI Chat Error:", error)
       toast({
@@ -81,7 +136,14 @@ export function ChatInterface() {
       setIsLoading(false)
     }
   }
-
+  const fetchChats = async () => {
+    const res = await fetch("/api/chat/list");
+    const data = await res.json();
+    setChatList(data);
+  };
+  React.useEffect(() => {
+    fetchChats();
+  }, []);
   const handleKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
     if (e.key === "Enter" && !e.shiftKey) {
       e.preventDefault()
@@ -122,8 +184,8 @@ export function ChatInterface() {
               </div>
               <span className="text-lg font-semibold tracking-tight">MindFlow AI</span>
             </div>
-            <Button 
-              variant="outline" 
+            <Button
+              variant="outline"
               className="w-full justify-start gap-2 bg-secondary/50 border-border hover:bg-secondary"
               onClick={clearChat}
             >
@@ -136,12 +198,19 @@ export function ChatInterface() {
               <SidebarGroupLabel>Recent Conversations</SidebarGroupLabel>
               <SidebarGroupContent>
                 <SidebarMenu>
-                  <SidebarMenuItem>
-                    <SidebarMenuButton isActive>
-                      <MessageSquare className="h-4 w-4" />
-                      <span>Current Session</span>
-                    </SidebarMenuButton>
-                  </SidebarMenuItem>
+                  {chatList.map((chat) => (
+                    <SidebarMenuItem key={chat.id}>
+                      <SidebarMenuButton
+                        onClick={() => {
+                          setChatId(chat.id);
+                          setMessages([]);
+                        }}
+                      >
+                        <MessageSquare className="h-4 w-4" />
+                        <span>{chat.title}</span>
+                      </SidebarMenuButton>
+                    </SidebarMenuItem>
+                  ))}
                 </SidebarMenu>
               </SidebarGroupContent>
             </SidebarGroup>
@@ -155,7 +224,7 @@ export function ChatInterface() {
                 </SidebarMenuButton>
               </SidebarMenuItem>
               <SidebarMenuItem>
-                <SidebarMenuButton 
+                <SidebarMenuButton
                   className="gap-2 text-destructive hover:text-destructive"
                   onClick={handleLogout}
                 >
@@ -172,12 +241,10 @@ export function ChatInterface() {
             <div className="flex-1">
               <h2 className="text-sm font-medium text-muted-foreground">Active Session</h2>
             </div>
-            <Button variant="ghost" size="icon" onClick={clearChat} title="Clear conversation">
-              <Trash2 className="h-4 w-4 text-muted-foreground hover:text-destructive transition-colors" />
-            </Button>
+            
           </header>
 
-          <div 
+          <div
             ref={scrollRef}
             className="flex-1 overflow-y-auto p-4 md:p-8 space-y-2 scroll-smooth"
           >
@@ -212,7 +279,7 @@ export function ChatInterface() {
           </div>
 
           <div className="p-4 md:p-6 bg-background border-t border-border">
-            <form 
+            <form
               onSubmit={handleSendMessage}
               className="max-w-4xl mx-auto relative group"
             >
@@ -223,9 +290,9 @@ export function ChatInterface() {
                 onChange={(e) => setInputValue(e.target.value)}
                 onKeyDown={handleKeyDown}
               />
-              <Button 
-                size="icon" 
-                type="submit" 
+              <Button
+                size="icon"
+                type="submit"
                 disabled={!inputValue.trim() || isLoading}
                 className={cn(
                   "absolute right-2.5 bottom-2.5 h-10 w-10 rounded-lg transition-all",
