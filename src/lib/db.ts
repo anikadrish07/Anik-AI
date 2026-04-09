@@ -1,16 +1,17 @@
-
 import postgres from 'postgres';
 
 const DATABASE_URL = process.env.DATABASE_URL;
 
 /**
- * Initialize Postgres client lazily and safely.
- * rejectUnauthorized: false is often required for hosted databases like Neon/Supabase 
- * when connecting from certain cloud environments.
+ * Initialize Postgres client.
+ * For localhost, we disable SSL. For hosted services like Neon/Supabase, 
+ * we use rejectUnauthorized: false to allow self-signed certificates.
  */
+const isLocal = DATABASE_URL?.includes('localhost') || DATABASE_URL?.includes('127.0.0.1');
+
 const sql = DATABASE_URL 
   ? postgres(DATABASE_URL, {
-      ssl: { rejectUnauthorized: false },
+      ssl: isLocal ? false : { rejectUnauthorized: false },
       max: 10,
       connect_timeout: 10,
     }) 
