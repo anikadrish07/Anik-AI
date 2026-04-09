@@ -83,7 +83,22 @@ const contextAwareAiConversationFlow = ai.defineFlow(
   },
   async (input) => {
     try {
-      const { output } = await contextAwareAiConversationPrompt(input);
+      let output;
+
+      for (let i = 0; i < 3; i++) {
+        try {
+          const res = await contextAwareAiConversationPrompt(input);
+          output = res.output;
+          break;
+        } catch (error: any) {
+          if (error.code === 503 && i < 2) {
+            await new Promise(r => setTimeout(r, 1000)); // wait 1 sec
+          } else {
+            throw error;
+          }
+        }
+      }
+
       if (!output) {
         throw new Error('AI did not return a response.');
       }
