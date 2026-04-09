@@ -1,11 +1,7 @@
-/**
- * @fileOverview Defines the User model representing the database structure.
- */
-
 export interface User {
   id: number;
   email: string;
-  password?: string; // Optional because we don't always want to return it
+  password?: string; 
   name: string | null;
   created_at: Date;
 }
