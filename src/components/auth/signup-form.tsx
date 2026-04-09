@@ -1,7 +1,3 @@
-/**
- * @fileOverview Frontend component for the registration form.
- */
-
 "use client"
 
 import * as React from "react"
