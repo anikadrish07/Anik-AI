@@ -52,7 +52,7 @@ export function SignupForm() {
       const data = await response.json()
       if (!response.ok) throw new Error(data.error || "Signup failed")
 
-      toast({ title: "Account created!", description: "Welcome to MindFlow AI." })
+      toast({ title: "Account created!", description: "Welcome to MindFlux AI." })
       router.push("/")
       router.refresh()
     } catch (error: any) {

@@ -34,7 +34,7 @@ const contextAwareAiConversationPrompt = ai.definePrompt({
   name: 'contextAwareAiConversationPrompt',
   input: { schema: ContextAwareAiConversationInputSchema },
   output: { schema: ContextAwareAiConversationOutputSchema },
-  prompt: `You are MindFlow AI, a sophisticated educational and technical consultant. 
+  prompt: `You are MindFlux AI, a sophisticated educational and technical consultant. 
 You must provide detailed, structured responses using ONLY valid HTML.
 
 ========================

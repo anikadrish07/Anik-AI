@@ -130,7 +130,7 @@ export function ChatInterface() {
       toast({
         variant: "destructive",
         title: "Connection Error",
-        description: error.message || "Failed to reach MindFlow servers.",
+        description: error.message || "Failed to reach MindFlux servers.",
       })
     } finally {
       setIsLoading(false)
@@ -182,7 +182,7 @@ export function ChatInterface() {
               <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-primary text-primary-foreground">
                 <MessageSquare className="h-5 w-5" />
               </div>
-              <span className="text-lg font-semibold tracking-tight">MindFlow AI</span>
+              <span className="text-lg font-semibold tracking-tight">MindFlux AI</span>
             </div>
             <Button
               variant="outline"
@@ -257,7 +257,7 @@ export function ChatInterface() {
                 <div className="w-16 h-16 rounded-2xl bg-primary/10 flex items-center justify-center mb-6">
                   <Bot className="h-8 w-8 text-primary" />
                 </div>
-                <h1 className="text-2xl font-bold mb-2">Welcome to MindFlow</h1>
+                <h1 className="text-2xl font-bold mb-2">Welcome to MindFlux</h1>
                 <p className="text-muted-foreground">
                   Your sophisticated AI assistant for deep thinking, creative writing, and complex problem-solving.
                 </p>
@@ -314,7 +314,7 @@ export function ChatInterface() {
               </div>
 
               <p className="text-[10px] text-center text-muted-foreground mt-3 opacity-50">
-                MindFlow can make mistakes. Check important info.
+                MindFlux can make mistakes. Check important info.
               </p>
             </form>
           </div>

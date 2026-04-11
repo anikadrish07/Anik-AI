@@ -4,7 +4,7 @@ import "katex/dist/katex.min.css";
 import { Toaster } from "@/components/ui/toaster"
 
 export const metadata: Metadata = {
-  title: 'MindFlow AI Chat',
+  title: 'MindFlux AI Chat',
   description: 'Sophisticated AI conversations powered by advanced models.',
 };
 

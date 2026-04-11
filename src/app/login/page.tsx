@@ -10,7 +10,7 @@ export default function LoginPage() {
           <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-xl bg-primary text-primary-foreground mb-4">
             <MessageSquare className="h-7 w-7" />
           </div>
-          <h1 className="text-3xl font-bold tracking-tight">MindFlow AI</h1>
+          <h1 className="text-3xl font-bold tracking-tight">MindFlux AI</h1>
           <p className="mt-2 text-muted-foreground">Sign in to your account</p>
         </div>
         <LoginForm />

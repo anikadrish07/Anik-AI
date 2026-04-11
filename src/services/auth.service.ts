@@ -11,12 +11,12 @@ export class AuthService {
   static async login(data: LoginRequest) {
     // Fallback for prototyping if DB is not configured or connection failed
     if (!sql) {
-      if (data.email === "demo@mindflow.ai" && data.password === "password123") {
-        const demoUser = { id: 0, email: "demo@mindflow.ai", name: "Demo User" };
+      if (data.email === "demo@mindflux.ai" && data.password === "password123") {
+        const demoUser = { id: 0, email: "demo@mindflux.ai", name: "Demo User" };
         await createSession(demoUser);
         return { success: true, user: demoUser };
       }
-      throw new Error("Database not configured. Please set DATABASE_URL or use demo@mindflow.ai / password123");
+      throw new Error("Database not configured. Please set DATABASE_URL or use demo@mindflux.ai / password123");
     }
 
     try {

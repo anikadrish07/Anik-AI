@@ -1,4 +1,4 @@
-# **App Name**: MindFlow AI Chat
+# **App Name**: MindFlux AI Chat
 
 ## Core Features:
 
