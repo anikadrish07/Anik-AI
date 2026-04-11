@@ -1,4 +1,4 @@
-import { createChat } from "@/services/chat.service";
+import { ChatService } from "@/services/chat.service";
 import { getSession } from "@/lib/auth";
 
 export async function POST(req: Request) {
@@ -11,7 +11,7 @@ export async function POST(req: Request) {
 
     const { title } = await req.json();
 
-    const chat = await createChat(session.user.id, title);
+    const chat = await ChatService.createChat(session.user.id, title);
 
     return Response.json(chat);
   } catch (error) {
