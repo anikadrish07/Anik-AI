@@ -201,9 +201,13 @@ export function ChatInterface() {
                   {chatList.map((chat) => (
                     <SidebarMenuItem key={chat.id}>
                       <SidebarMenuButton
-                        onClick={() => {
+                        onClick={async () => {
                           setChatId(chat.id);
-                          setMessages([]);
+
+                          const res = await fetch(`/api/chat/messages?chatId=${chat.id}`);
+                          const data = await res.json();
+
+                          setMessages(data);
                         }}
                       >
                         <MessageSquare className="h-4 w-4" />
@@ -241,7 +245,7 @@ export function ChatInterface() {
             <div className="flex-1">
               <h2 className="text-sm font-medium text-muted-foreground">Active Session</h2>
             </div>
-            
+
           </header>
 
           <div
@@ -257,7 +261,7 @@ export function ChatInterface() {
                 <p className="text-muted-foreground">
                   Your sophisticated AI assistant for deep thinking, creative writing, and complex problem-solving.
                 </p>
-                <div className="mt-8 grid grid-cols-1 gap-3 w-full">
+                {/* <div className="mt-8 grid grid-cols-1 gap-3 w-full">
                   <Button variant="secondary" className="justify-start h-auto py-3 px-4 border border-border" onClick={() => {
                     setInputValue("Explain the concept of neural networks.");
                   }}>
@@ -268,7 +272,7 @@ export function ChatInterface() {
                   }}>
                     "Brainstorm SaaS marketing..."
                   </Button>
-                </div>
+                </div> */}
               </div>
             ) : (
               messages.map((msg, i) => (
@@ -281,26 +285,34 @@ export function ChatInterface() {
           <div className="p-4 md:p-6 bg-background border-t border-border">
             <form
               onSubmit={handleSendMessage}
-              className="max-w-4xl mx-auto relative group"
+              className="max-w-4xl mx-auto"
             >
-              <Textarea
-                placeholder="Message MindFlow..."
-                className="min-h-[56px] w-full bg-secondary/30 border-border resize-none py-4 pr-14 pl-4 rounded-xl focus:ring-primary/50 focus:border-primary/50 transition-all text-base"
-                value={inputValue}
-                onChange={(e) => setInputValue(e.target.value)}
-                onKeyDown={handleKeyDown}
-              />
-              <Button
-                size="icon"
-                type="submit"
-                disabled={!inputValue.trim() || isLoading}
-                className={cn(
-                  "absolute right-2.5 bottom-2.5 h-10 w-10 rounded-lg transition-all",
-                  inputValue.trim() ? "bg-primary text-primary-foreground" : "bg-muted text-muted-foreground"
-                )}
-              >
-                <Send className="h-5 w-5" />
-              </Button>
+              <div className="relative">
+
+                <Textarea
+                  placeholder="Message MindFlow..."
+                  className="min-h-[56px] w-full bg-secondary/30 border-border resize-none pt-[14px] pb-[14px] pr-16 pl-4 rounded-xl focus:ring-primary/50 focus:border-primary/50 transition-all text-base leading-relaxed"
+                  value={inputValue}
+                  onChange={(e) => setInputValue(e.target.value)}
+                  onKeyDown={handleKeyDown}
+                />
+
+                <Button
+                  size="icon"
+                  type="submit"
+                  disabled={!inputValue.trim() || isLoading}
+                  className={cn(
+                    "absolute right-3 top-1/2 -translate-y-1/2 flex items-center justify-center h-9 w-9 rounded-lg",
+                    inputValue.trim()
+                      ? "bg-primary text-primary-foreground"
+                      : "bg-muted text-muted-foreground"
+                  )}
+                >
+                  <Send className="h-4 w-4" />
+                </Button>
+
+              </div>
+
               <p className="text-[10px] text-center text-muted-foreground mt-3 opacity-50">
                 MindFlow can make mistakes. Check important info.
               </p>
