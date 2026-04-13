@@ -198,7 +198,7 @@ export function ChatInterface() {
               <SidebarGroupLabel>Recent Conversations</SidebarGroupLabel>
               <SidebarGroupContent>
                 <SidebarMenu>
-                  {chatList.map((chat) => (
+                  {chatList?.map((chat) => (
                     <SidebarMenuItem key={chat.id}>
                       <SidebarMenuButton
                         onClick={async () => {
@@ -261,21 +261,9 @@ export function ChatInterface() {
                 <p className="text-muted-foreground">
                   Your sophisticated AI assistant for deep thinking, creative writing, and complex problem-solving.
                 </p>
-                {/* <div className="mt-8 grid grid-cols-1 gap-3 w-full">
-                  <Button variant="secondary" className="justify-start h-auto py-3 px-4 border border-border" onClick={() => {
-                    setInputValue("Explain the concept of neural networks.");
-                  }}>
-                    "Explain neural networks..."
-                  </Button>
-                  <Button variant="secondary" className="justify-start h-auto py-3 px-4 border border-border" onClick={() => {
-                    setInputValue("Brainstorm marketing strategies for a SaaS product.");
-                  }}>
-                    "Brainstorm SaaS marketing..."
-                  </Button>
-                </div> */}
               </div>
             ) : (
-              messages.map((msg, i) => (
+              messages?.map((msg, i) => (
                 <MessageBubble key={i} role={msg.role} content={msg.content} />
               ))
             )}
